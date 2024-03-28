@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def print_hello():
     print("hello vinay")
@@ -9,7 +9,8 @@ def print_hello():
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2024, 3, 27),
-    'retries': 1
+    'retries': 1,
+    'catchup': False  # Don't run missed DAG runs
 }
 
 # Define DAG
@@ -17,7 +18,7 @@ dag = DAG(
     'print_hello_dag',
     default_args=default_args,
     description='A simple DAG to print hello',
-    schedule_interval=None,  # Run once
+    schedule_interval=timedelta(hours=6),  # Run every 6 hours
 )
 
 # Define task
