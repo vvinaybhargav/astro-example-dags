@@ -1,9 +1,10 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.bash_operator import BashOperator
 from datetime import datetime, timedelta
 
 def print_hello():
-    print("hello vinay")
+    print("hello")
 
 # Define DAG arguments
 default_args = {
@@ -15,17 +16,25 @@ default_args = {
 
 # Define DAG
 dag = DAG(
-    'print_hello_dag',
+    'print_hello_and_echo_hello_world_dag',
     default_args=default_args,
-    description='A simple DAG to print hello',
+    description='A DAG to print hello and echo hello world',
     schedule_interval=timedelta(hours=6),  # Run every 6 hours
 )
 
-# Define task
+# Define PythonOperator task
 print_hello_task = PythonOperator(
     task_id='print_hello_task',
     python_callable=print_hello,
     dag=dag,
 )
 
-print_hello_task
+# Define BashOperator task
+echo_hello_world_task = BashOperator(
+    task_id='echo_hello_world_task',
+    bash_command='echo "hello world"',
+    dag=dag,
+)
+
+# Set up task dependencies
+print_hello_task >> echo_hello_world_task
