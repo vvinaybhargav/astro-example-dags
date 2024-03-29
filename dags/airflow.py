@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-from airflow.contrib.operators.git_operator import GitCloneOperator, GitPushOperator
+from airflow.providers.git.operators.git import GitCloneOperator, GitOperator
 from datetime import datetime
 
 def convert_csv_to_json():
@@ -34,12 +34,12 @@ with DAG('csv_to_json_and_git_push', default_args=default_args, schedule_interva
     )
 
     # Push changes to GitHub with authentication
-    git_push = GitPushOperator(
+    git_push = GitOperator(
         task_id='git_push',
-        repo='https://github.com/vvinaybhargav/airflow.git',
-        remote_branch='main',
-        directory='/path/to/local/clone',
-        commit_message='Converted CSV to JSON and pushed changes',
+        repo='/path/to/local/clone',
+        command='push',
+        remote='origin',
+        ref='main',
         git_token='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'  # Replace with your personal access token
     )
 
